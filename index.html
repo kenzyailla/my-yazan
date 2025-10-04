@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المخزون الكيميائي - كتالوج</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: "Noto Kufi arabic", Verdana, sans-serif;
+        }
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f0f8ff;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .search-box {
+            width: 70%;
+            padding: 12px 20px;
+            font-size: 16px;
+            border: 2px solid #3498db;
+            border-radius: 30px;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .search-box:focus {
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 12px 15px;
+            text-align: right;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+            position: sticky;
+            top: 0;
+            cursor: pointer;
+        }
+        th:hover {
+            background-color: #2980b9;
+        }
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        tr:hover {
+            background-color: #e1f5fe;
+        }
+        .notes {
+            font-style: italic;
+            color: #7f8c8d;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        .highlight {
+            background-color: #fff9c4;
+            font-weight: bold;
+        }
+        .results-info {
+            text-align: center;
+            margin: 10px 0;
+            color: #3498db;
+            font-weight: bold;
+        }
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            .search-box {
+                width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>المخزون الكيميائي - كتالوج</h1>
+        
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن مادة كيميائية...">
+        </div>
+        
+        <div class="results-info" id="resultsInfo">إجمالي العناصر: 155</div>
+        
+        <table id="chemicalTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">المادة</th>
+                    <th onclick="sortTable(1)">الكود</th>
+                    <th onclick="sortTable(2)">الوحدة</th>
+                    <th onclick="sortTable(3)">الكمية</th>
+                    <th>ملاحظات</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- سيتم إضافة البيانات هنا عبر JavaScript -->
+            </tbody>
+        </table>
+        
+        <div class="footer">
+            المخزون الكيميائي - آخر تحديث: 2023
+        </div>
+    </div>
+
+    <script>
+        // بيانات المخزون الكيميائي
+        const chemicalData = [
+            {item: "Acetaldehyde v.p.", code: "CL00.0196.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Acetamide v.p.", code: "CL00.2724.500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Acetanilide a.r.", code: "CL00.2714.500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Acetic acid glacial 99-100% a.r.", code: "CL00.0116.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Acetic anhydride a.r.", code: "CL00.0153.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Acetone, HPLC grade", code: "CL00.0172.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Acetone a.r.", code: "CL00.0114.2511", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Acetonitrile, ULC-MS grade", code: "CL00.2752.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Acetonitrile, HPLC gradient grade", code: "CL00.0175.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Acetonitrile, HPLC grade", code: "CL00.0174.2500", unit: "2.5 L", quantity: "400", notes: ""},
+            {item: "Acetophenone v.p.", code: "CL00.2726.1000", unit: "1 L", quantity: "24", notes: ""},
+            {item: "Acetylacetone a.r.", code: "CL00.0199.0250", unit: "250 Ml", quantity: "6", notes: ""},
+            {item: "Adipic acid p.", code: "CL00.2739.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Aluminium(III) ammonium sulfate.12aq a.r.", code: "CL00.2708.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Aluminium(III) chloride.6aq a.r.", code: "CL00.0122.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "Aluminium(III) hydroxide p.", code: "CL00.2709.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Aluminium(III) potassium sulfate.12aq a.r.", code: "CL00.0157.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "Ammonia 25 weight % solution a.r.", code: "CL00.0115.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Ammonium acetate a.r.", code: "CL00.0123.0500", unit: "500 Gm", quantity: "12", notes: ""},
+            {item: "Ammonium bromide a.r.", code: "CL00.2734.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Ammonium carbonate a.r.", code: "CL00.2729.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Ammonium cerium(IV) nitrate a.r.", code: "CL00.0178.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium cerium(IV) sulfate.2aq a.r.", code: "CL00.0182.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium chloride a.r.", code: "CL00.0130.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "tri-Ammonium citrate v.p.", code: "CL00.0180.0500", unit: "500 Gm", quantity: "24", notes: ""},
+            {item: "Ammonium cobalt(II) sulfate.6aq v.p.", code: "CL00.0186.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium dichromate a.r.", code: "CL00.0131.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "Ammonium dihydrogen phosphate a.r.", code: "CL00.0133.0500", unit: "500 Gm", quantity: "36", notes: ""},
+            {item: "Ammonium heptamolybdate.4aq a.r.", code: "CL00.0135.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Ammonium hydrogen carbonate a.r.", code: "CL00.0176.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "di-Ammonium hydrogen citrate a.r.", code: "CL00.0141.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "di-Ammonium hydrogen phosphate a.r.", code: "CL00.0125.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium iodide a.r.", code: "CL00.0183.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium iron(II) sulfate.6aq a.r.", code: "CL00.0137.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Ammonium monovanadate a.r.", code: "CL00.0127.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium oxalate.1aq a.r.", code: "CL00.0144.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium sulfate a.r.", code: "CL00.0148.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "Ammonium thiocyanate a.r.", code: "CL00.0143.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Ammonium thiosulfate v.p.", code: "CL00.0184.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Amylalcohol-(iso) a.r.", code: "CL00.0177.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Barium acetate a.r.", code: "CL00.0205.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Barium carbonate a.r.", code: "CL00.0226.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Barium chloride.2aq a.r.", code: "CL00.0207.1000", unit: "1 KG", quantity: "6", notes: ""},
+            {item: "Benedict's reagent", code: "CL02.0214.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Benzaldehyde p.", code: "CL00.0204.0500", unit: "500 Ml", quantity: "6", notes: ""},
+            {item: "Bismuth(III) nitrate.5aq v.p.", code: "CL00.0228.0250", unit: "250 Ml", quantity: "12", notes: ""},
+            {item: "Biuret reagent", code: "CL02.0203.1000", unit: "1000 Ml", quantity: "6", notes: ""},
+            {item: "Buffer pH 10.00", code: "CL03.0204.1000", unit: "1000 Ml", quantity: "12", notes: ""},
+            {item: "Buffer pH 9.00", code: "CL03.0218.1000", unit: "1000 Ml", quantity: "12", notes: ""},
+            {item: "Buffer pH 7.00", code: "CL03.0216.1000", unit: "1000 Ml", quantity: "12", notes: ""},
+            {item: "Butane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0266.0025", unit: "25 Gm", quantity: "6", notes: ""},
+            {item: "Butanol-(1), HPLC grade", code: "CL00.0243.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Butanol-(2) a.r.", code: "CL00.0222.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Butanol-(iso) a.r.", code: "CL00.0224.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Butanol-(tert) a.r.", code: "CL00.0249.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Calcium acetate v.p.", code: "CL00.0356.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Calcium carbonate, powder a.r.", code: "CL00.0337.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "tri-Calcium phosphate v.p.", code: "CL00.0359.1000", unit: "1 KG", quantity: "6", notes: ""},
+            {item: "Calcium stearate v.p.", code: "CL00.2915.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Carbon activated powder v.p.", code: "CL00.2749.1000", unit: "1 KG", quantity: "12", notes: ""},
+            {item: "Chloral hydrate v.p.", code: "CL00.2902.0500", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Chloroform, HPLC grade", code: "CL00.0376.2500", unit: "2.5 L", quantity: "100", notes: ""},
+            {item: "Chloroform a.r.", code: "CL00.2906.2500", unit: "2.5 L", quantity: "48", notes: ""},
+            {item: "Citric acid, anhydrous v.p.", code: "CL00.0372.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Citric acid.1aq a.r.", code: "CL00.0320.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Cobalt(II) chloride.6aq a.r.", code: "CL00.1179.0500", unit: "500 Gm", quantity: "12", notes: ""},
+            {item: "Cobalt(II) chloride.6aq p.", code: "CL00.1180.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Copper(II) chloride.2aq a.r.", code: "CL00.1188.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Copper(II) chloride, anhydrous v.p.", code: "CL00.3702.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Copper(II) oxide a.r.", code: "CL00.1192.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Copper(II) sulfate, anhydrous a.r.", code: "CL00.3730.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Copper(II) sulfate.5aq a.r.", code: "CL00.1127.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Cyclohexane, HPLC grade", code: "CL00.0377.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Cyclohexane a.r.", code: "CL00.0338.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Cyclohexanone a.r.", code: "CL00.0397.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Decane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0425.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Dichloromethane, HPLC grade", code: "CL00.0470.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Dichloromethane a.r.", code: "CL00.0404.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Diethylether a.r.", code: "CL00.0405.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "N,N-Dimethylformamide a.r.", code: "CL00.0438.2500", unit: "2.5 L", quantity: "12", notes: "نحتاج أيضًا إلى درجة HPLC من N,N Dimethyl Formamide"},
+            {item: "Dimethyl sulfoxide, HPLC grade", code: "CL00.0465.2500", unit: "2.5 L", quantity: "12", notes: "متوفر فقط بحجم 1000 مل في الكتالوج"},
+            {item: "Dimethyl sulfoxide, anhydrous a.r.", code: "CL00.0422.2500", unit: "2.5 L", quantity: "48", notes: ""},
+            {item: "Dioxan-(1,4), HPLC grade", code: "CL00.0417.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Ethanol, abs. 100% a.r.", code: "CL00.0505.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Ethanol, abs. 100%, HPLC grade", code: "CL00.0529.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Ethyl acetate, HPLC grade", code: "CL00.0515.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Formamide a.r.", code: "CL00.0622.2500", unit: "2.5 L", quantity: "400", notes: ""},
+            {item: "Formic acid 85% v.p.", code: "CL00.1310.1000", unit: "1 L", quantity: "96", notes: ""},
+            {item: "Glycerol 99+% a.r.", code: "CL00.0724.1000", unit: "1 L", quantity: "12", notes: ""},
+            {item: "Glycine v.p.", code: "CL00.0712.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Gum arabic powder p.", code: "CL00.0723.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Hematoxylin", code: "CL06.0807.0500", unit: "500", quantity: "4", notes: "متوفر فقط بحجم 25 جم في الكتالوج"},
+            {item: "Heptane-(n) 99+%, HPLC grade", code: "CL00.0816.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Heptane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0836.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Hexane-(n) 99+%, HPLC grade", code: "CL00.0817.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Hexane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0835.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Hydralyt® Composite 5", code: "CL02.0818.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Hydrazine reagent", code: "CL02.0803.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Hydrochloric acid 37% a.r.", code: "CL00.0310.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Hydrochloric acid 34-37% (Pico-Pure)", code: "CL00.2951.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Hydrochloric acid 32% a.r.", code: "CL00.0365.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Hydrofluoric acid 48% a.r.", code: "CL00.0616.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Hydrogen peroxide 35 weight % solution (stab.) a.r.", code: "CL00.2306.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Iodine, pellets a.r.", code: "CL00.1002.0100", unit: "100 Gm", quantity: "10", notes: ""},
+            {item: "Iron(II) chloride.4aq a.r.", code: "CL00.0911.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Iron(III) chloride, anhydrous p.", code: "CL00.0903.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Lead(II) acetate.3aq a.r.", code: "CL00.1207.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Lead(II) carbonate v.p.", code: "CL00.1224.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Magnesium stearate v.p.", code: "CL00.1390.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Methanol, ULC-MS grade", code: "CL00.3915.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Methanol, HPLC gradient grade", code: "CL00.1364.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Methanol, HPLC grade", code: "CL00.1363.2500", unit: "2.5 L", quantity: "400", notes: ""},
+            {item: "Octane(-iso), HPLC grade", code: "CL00.1505.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Octane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.1515.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Pentane-(-n) 99+%, HPLC grade", code: "CL00.1622.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Pentane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0198.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Perchloric acid 70% a.r.", code: "CL00.1612.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Phenol a.r.", code: "CL00.0607.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Phenol 90% solution", code: "CL02.0611.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Phosphoric acid 85% a.r.", code: "CL00.0605.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Potassium acetate a.r.", code: "CL00.3731.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium bromate a.r.", code: "CL00.1139.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium bromide a.r.", code: "CL00.1138.0250", unit: "250 Gm", quantity: "8", notes: ""},
+            {item: "Potassium carbonate, anhydrous a.r.", code: "CL00.1132.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium chloride a.r.", code: "CL00.1133.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium chromate a.r.", code: "CL00.1142.0500", unit: "500 Gm", quantity: "12", notes: ""},
+            {item: "tri-Potassium citrate v.p.", code: "CL00.3709.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium dichromate a.r.", code: "CL00.1144.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium dihydrogen phosphate a.r.", code: "CL00.1146.1000", unit: "1 Kg", quantity: "36", notes: ""},
+            {item: "Potassium disulfate a.r.", code: "CL00.1148.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium disulfite a.r.", code: "CL00.1136.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium fluoride a.r.", code: "CL00.1149.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Potassium hydrogen carbonate a.r.", code: "CL00.1153.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "di-Potassium hydrogen phosphate a.r.", code: "CL00.1155.1000", unit: "1 Kg", quantity: "36", notes: ""},
+            {item: "Potassium hydrogen phthalate a.r.", code: "CL00.1157.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium hydrogen sulfate a.r.", code: "CL00.1158.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium hydroxide, pellets a.r.", code: "CL00.1135.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Potassium iodate a.r.", code: "CL00.1161.0500", unit: "500 Gm", quantity: "12", notes: ""},
+            {item: "Potassium iodide a.r.", code: "CL00.1134.0250", unit: "250 Gm", quantity: "12", notes: ""},
+            {item: "Potassium iodide a.r.", code: "CL00.1134.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium nitrate a.r.", code: "CL00.1164.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Potassium nitrite a.r.", code: "CL00.1165.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Potassium perchlorate a.r.", code: "CL00.3724.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "tri-Potassium phosphate.1aq v.p.", code: "CL00.1173.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium sulfate a.r.", code: "CL00.1174.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Potassium thiocyanate a.r.", code: "CL00.1176.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Propanol-1 (n-Propanol), HPLC grade", code: "CL00.0924.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Propanol-2 (iso-Propanol), HPLC grade", code: "CL00.0920.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Pyridine a.r.", code: "CL00.1610.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Resorcinol v.p.", code: "CL00.1812.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Salicylic acid v.p.", code: "CL00.1941.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Silver nitrate a.r.", code: "CL00.2614.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Silver sulfate a.r.", code: "CL00.2616.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Soda lime with indicator a.r.", code: "CL00.4056.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Sodium acetate, anhydrous a.r.", code: "CL00.4002.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium acetate.3aq a.r.", code: "CL00.1430.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium benzoate v.p.", code: "CL00.1428.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium bromate v.p.", code: "CL00.1450.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Sodium bromide v.p.", code: "CL00.1451.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Sodium carbonate, anhydrous a.r.", code: "CL00.1431.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "tri-Sodium citrate anhydrous v.p.", code: "CL00.4029.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "tri-Sodium citrate.2aq a.r.", code: "CL00.1453.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium dichromate a.r.", code: "CL00.4009.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium dihydrogen phosphate, anhydrous v.p.", code: "CL00.1496.1000", unit: "1 Kg", quantity: "48", notes: ""},
+            {item: "Sodium dihydrogen phosphate.2aq a.r.", code: "CL00.1497.1000", unit: "1 Kg", quantity: "48", notes: ""},
+            {item: "Sodium dihydrogen phosphate.1aq a.r.", code: "CL00.1488.1000", unit: "1 Kg", quantity: "48", notes: ""},
+            {item: "Sodium disulfite a.r.", code: "CL00.1458.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium formate a.r.", code: "CL00.1958.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium hydrogen carbonate a.r.", code: "CL00.1432.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "di-Sodium hydrogen phosphate, anhydrous a.r.", code: "CL00.1489.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "di-Sodium hydrogen phosphate.12aq a.r.", code: "CL00.1465.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "di-Sodium hydrogen phosphate.7aq a.r.", code: "CL00.4003.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "di-Sodium hydrogen phosphate.2aq a.r.", code: "CL00.1463.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Sodium hydroxide, pellets a.r.", code: "CL00.1404.1000", unit: "1 Kg", quantity: "24", notes: ""},
+            {item: "Sodium iodate a.r.", code: "CL00.1467.0250", unit: "250 Gm", quantity: "12", notes: ""},
+            {item: "Sodium iodide v.p.", code: "CL00.1468.0500", unit: "500 Gm", quantity: "12", notes: ""},
+            {item: "Sodium molybdate a.r.", code: "CL00.1435.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Sodium nitrate a.r.", code: "CL00.1469.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium nitrite a.r.", code: "CL00.1471.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "tri-Sodium phosphate.12aq a.r.", code: "CL00.4017.1000", unit: "1 Kg", quantity: "12", notes: ""},
+            {item: "Sodium sulfate, anhydrous a.r.", code: "CL00.1476.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sodium sulfite, anhydrous a.r.", code: "CL00.1480.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "di-Sodium tetraborate, anhydrous a.r.", code: "CL00.1483.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Sodium thiocyanate a.r.", code: "CL00.4055.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Sodium thiosulfate, anhydrous a.r.", code: "CL00.4049.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Strontium carbonate v.p.", code: "CL00.1909.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Strontium chloride.6aq a.r.", code: "CL00.1910.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Strontium nitrate a.r.", code: "CL00.1913.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Sulfanilamide a.r.", code: "CL00.1948.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Sulfanilic acid v.p.", code: "CL00.1939.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Sulphur, powder v.p.", code: "CL00.2609.1000", unit: "1 kg", quantity: "6", notes: ""},
+            {item: "Sulfuric acid 98% a.r.", code: "CL00.2637.2500", unit: "2.5 L", quantity: "12", notes: ""},
+            {item: "Tetrahydrofuran, HPLC grade", code: "CL00.2027.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Tetramethylammonium bromide v.p.", code: "CL00.2041.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Tetramethylammonium chloride p.", code: "CL00.2060.0100", unit: "100 Gm", quantity: "6", notes: ""},
+            {item: "Thioacetamide a.r.", code: "CL00.2062.0050", unit: "50 Gm", quantity: "6", notes: ""},
+            {item: "Tin(II) chloride.2aq a.r.", code: "CL00.2012.0250", unit: "250 Gm", quantity: "6", notes: ""},
+            {item: "Toluene, HPLC grade", code: "CL00.2028.2500", unit: "2.5 L", quantity: "24", notes: ""},
+            {item: "Trichloroacetic acid a.r.", code: "CL00.2037.0100", unit: "100 Gm", quantity: "12", notes: ""},
+            {item: "Trichloroacetic acid a.r.", code: "CL00.2037.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Triethanolamine v.p.", code: "CL00.2007.1000", unit: "1 L", quantity: "12", notes: ""},
+            {item: "Triethylamine v.p.", code: "CL00.2043.1000", unit: "1 L", quantity: "6", notes: ""},
+            {item: "Trifluoroacetic acid v.p.", code: "CL00.2088.0500", unit: "500 Ml", quantity: "12", notes: ""},
+            {item: "Tris(hydroxymethyl) aminomethane for Molecular biology", code: "CL00.2095.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Water, ULC-MS grade", code: "CL02.2112.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Water, HPLC gradient grade", code: "CL02.2113.2500", unit: "2.5 L", quantity: "40", notes: ""},
+            {item: "Water, HPLC grade", code: "CL02.0221.2500", unit: "2.5 L", quantity: "100", notes: ""},
+            {item: "Zinc acetate.2aq a.r.", code: "CL00.2618.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Zinc bromide, anhydrous v.p.", code: "CL00.2638.0500", unit: "500 Gm", quantity: "6", notes: ""},
+            {item: "Zinc chloride, anhydrous a.r.", code: "CL00.2621.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Zinc oxide a.r.", code: "CL00.2626.1000", unit: "1 Kg", quantity: "6", notes: ""},
+            {item: "Zinc sulfate.7aq a.r.", code: "CL00.2628.1000", unit: "1 Kg", quantity: "6", notes: ""}
+        ];
+
+        // تحميل البيانات في الجدول عند بدء التشغيل
+        document.addEventListener('DOMContentLoaded', function() {
+            populateTable(chemicalData);
+            
+            // إضافة مستمع حدث لحقل البحث
+            document.getElementById('searchInput').addEventListener('input', function() {
+                searchTable();
+            });
+        });
+
+        // دالة لملء الجدول بالبيانات
+        function populateTable(data) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.item}</td>
+                    <td>${item.code}</td>
+                    <td>${item.unit}</td>
+                    <td>${item.quantity}</td>
+                    <td class="${item.notes ? 'notes' : ''}">${item.notes}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // تحديث معلومات النتائج
+            document.getElementById('resultsInfo').textContent = `إجمالي العناصر: ${data.length}`;
+        }
+
+        // دالة البحث في الجدول
+        function searchTable() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const filteredData = chemicalData.filter(item => 
+                item.item.toLowerCase().includes(searchTerm) ||
+                item.code.toLowerCase().includes(searchTerm) ||
+                item.unit.toLowerCase().includes(searchTerm) ||
+                item.quantity.toString().includes(searchTerm) ||
+                item.notes.toLowerCase().includes(searchTerm)
+            );
+            
+            populateTable(filteredData);
+            
+            // إضافة التمييز للنص المطابق
+            if (searchTerm) {
+                highlightText(searchTerm);
+            }
+        }
+
+        // دالة لإضافة تمييز للنص المطابق
+        function highlightText(searchTerm) {
+            const rows = document.querySelectorAll('#tableBody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                cells.forEach(cell => {
+                    const originalText = cell.textContent;
+                    const regex = new RegExp(`(${searchTerm})`, 'gi');
+                    const highlightedText = originalText.replace(regex, '<span class="highlight">$1</span>');
+                    cell.innerHTML = highlightedText;
+                });
+            });
+        }
+
+        // دالة لترتيب الجدول
+        let sortDirection = 1; // 1 للتصاعدي، -1 للتنازلي
+        
+        function sortTable(columnIndex) {
+            const table = document.getElementById('chemicalTable');
+            const tbody = table.querySelector('tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            
+            rows.sort((a, b) => {
+                const aValue = a.cells[columnIndex].textContent.trim();
+                const bValue = b.cells[columnIndex].textContent.trim();
+                
+                // محاولة تحويل القيم إلى أرقام إذا أمكن
+                const aNum = parseFloat(aValue);
+                const bNum = parseFloat(bValue);
+                
+                if (!isNaN(aNum) && !isNaN(bNum)) {
+                    return (aNum - bNum) * sortDirection;
+                } else {
+                    return aValue.localeCompare(bValue) * sortDirection;
+                }
+            });
+            
+            // إزالة الصفوف الحالية
+            while (tbody.firstChild) {
+                tbody.removeChild(tbody.firstChild);
+            }
+            
+            // إضافة الصفوف المرتبة
+            rows.forEach(row => tbody.appendChild(row));
+            
+            // عكس اتجاه الترتيب للمرة القادمة
+            sortDirection *= -1;
+        }
+    </script>
+</body>
+</html>
