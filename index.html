@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>المخزون الكيميائي - كتالوج</title>
+    <title>Chemical Inventory Catalog</title>
     <style>
         * {
             box-sizing: border-box;
-            font-family: "Noto Kufi arabic", Verdana, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         body {
             margin: 0;
@@ -54,7 +54,7 @@
         }
         th, td {
             padding: 12px 15px;
-            text-align: right;
+            text-align: left;
             border-bottom: 1px solid #ddd;
         }
         th {
@@ -106,36 +106,36 @@
 </head>
 <body>
     <div class="container">
-        <h1>المخزون الكيميائي - كتالوج</h1>
+        <h1>Chemical Inventory Catalog</h1>
         
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-box" placeholder="ابحث عن مادة كيميائية...">
+            <input type="text" id="searchInput" class="search-box" placeholder="Search for a chemical...">
         </div>
         
-        <div class="results-info" id="resultsInfo">إجمالي العناصر: 155</div>
+        <div class="results-info" id="resultsInfo">Total Items: 155</div>
         
         <table id="chemicalTable">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">المادة</th>
-                    <th onclick="sortTable(1)">الكود</th>
-                    <th onclick="sortTable(2)">الوحدة</th>
-                    <th onclick="sortTable(3)">الكمية</th>
-                    <th>ملاحظات</th>
+                    <th onclick="sortTable(0)">Item</th>
+                    <th onclick="sortTable(1)">Catalog Code</th>
+                    <th onclick="sortTable(2)">Unit</th>
+                    <th onclick="sortTable(3)">Quantity</th>
+                    <th>Notes</th>
                 </tr>
             </thead>
             <tbody id="tableBody">
-                <!-- سيتم إضافة البيانات هنا عبر JavaScript -->
+                <!-- Data will be populated via JavaScript -->
             </tbody>
         </table>
         
         <div class="footer">
-            المخزون الكيميائي - آخر تحديث: 2023
+            Chemical Inventory - Last Updated: 2023
         </div>
     </div>
 
     <script>
-        // بيانات المخزون الكيميائي
+        // Chemical inventory data
         const chemicalData = [
             {item: "Acetaldehyde v.p.", code: "CL00.0196.1000", unit: "1 L", quantity: "6", notes: ""},
             {item: "Acetamide v.p.", code: "CL00.2724.500", unit: "500 Gm", quantity: "6", notes: ""},
@@ -216,8 +216,8 @@
             {item: "Dichloromethane, HPLC grade", code: "CL00.0470.2500", unit: "2.5 L", quantity: "12", notes: ""},
             {item: "Dichloromethane a.r.", code: "CL00.0404.2500", unit: "2.5 L", quantity: "12", notes: ""},
             {item: "Diethylether a.r.", code: "CL00.0405.2500", unit: "2.5 L", quantity: "24", notes: ""},
-            {item: "N,N-Dimethylformamide a.r.", code: "CL00.0438.2500", unit: "2.5 L", quantity: "12", notes: "نحتاج أيضًا إلى درجة HPLC من N,N Dimethyl Formamide"},
-            {item: "Dimethyl sulfoxide, HPLC grade", code: "CL00.0465.2500", unit: "2.5 L", quantity: "12", notes: "متوفر فقط بحجم 1000 مل في الكتالوج"},
+            {item: "N,N-Dimethylformamide a.r.", code: "CL00.0438.2500", unit: "2.5 L", quantity: "12", notes: "we need also HPLC Grade of N,N Dimethyl Formamide"},
+            {item: "Dimethyl sulfoxide, HPLC grade", code: "CL00.0465.2500", unit: "2.5 L", quantity: "12", notes: "available as 1000 ml in catalog only"},
             {item: "Dimethyl sulfoxide, anhydrous a.r.", code: "CL00.0422.2500", unit: "2.5 L", quantity: "48", notes: ""},
             {item: "Dioxan-(1,4), HPLC grade", code: "CL00.0417.2500", unit: "2.5 L", quantity: "24", notes: ""},
             {item: "Ethanol, abs. 100% a.r.", code: "CL00.0505.2500", unit: "2.5 L", quantity: "24", notes: ""},
@@ -228,7 +228,7 @@
             {item: "Glycerol 99+% a.r.", code: "CL00.0724.1000", unit: "1 L", quantity: "12", notes: ""},
             {item: "Glycine v.p.", code: "CL00.0712.0250", unit: "250 Gm", quantity: "6", notes: ""},
             {item: "Gum arabic powder p.", code: "CL00.0723.1000", unit: "1 Kg", quantity: "12", notes: ""},
-            {item: "Hematoxylin", code: "CL06.0807.0500", unit: "500", quantity: "4", notes: "متوفر فقط بحجم 25 جم في الكتالوج"},
+            {item: "Hematoxylin", code: "CL06.0807.0500", unit: "500", quantity: "4", notes: "available as 25 gm in catalog only"},
             {item: "Heptane-(n) 99+%, HPLC grade", code: "CL00.0816.2500", unit: "2.5 L", quantity: "12", notes: ""},
             {item: "Heptane-1-sulfonic acid Na salt, HPLC grade", code: "CL00.0836.0100", unit: "100 Gm", quantity: "6", notes: ""},
             {item: "Hexane-(n) 99+%, HPLC grade", code: "CL00.0817.2500", unit: "2.5 L", quantity: "12", notes: ""},
@@ -351,17 +351,17 @@
             {item: "Zinc sulfate.7aq a.r.", code: "CL00.2628.1000", unit: "1 Kg", quantity: "6", notes: ""}
         ];
 
-        // تحميل البيانات في الجدول عند بدء التشغيل
+        // Load data into table on startup
         document.addEventListener('DOMContentLoaded', function() {
             populateTable(chemicalData);
             
-            // إضافة مستمع حدث لحقل البحث
+            // Add event listener for search input
             document.getElementById('searchInput').addEventListener('input', function() {
                 searchTable();
             });
         });
 
-        // دالة لملء الجدول بالبيانات
+        // Function to populate table with data
         function populateTable(data) {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
@@ -378,11 +378,11 @@
                 tableBody.appendChild(row);
             });
             
-            // تحديث معلومات النتائج
-            document.getElementById('resultsInfo').textContent = `إجمالي العناصر: ${data.length}`;
+            // Update results info
+            document.getElementById('resultsInfo').textContent = `Total Items: ${data.length}`;
         }
 
-        // دالة البحث في الجدول
+        // Function to search the table
         function searchTable() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
             const filteredData = chemicalData.filter(item => 
@@ -395,13 +395,13 @@
             
             populateTable(filteredData);
             
-            // إضافة التمييز للنص المطابق
+            // Add highlighting for matching text
             if (searchTerm) {
                 highlightText(searchTerm);
             }
         }
 
-        // دالة لإضافة تمييز للنص المطابق
+        // Function to highlight matching text
         function highlightText(searchTerm) {
             const rows = document.querySelectorAll('#tableBody tr');
             rows.forEach(row => {
@@ -415,8 +415,8 @@
             });
         }
 
-        // دالة لترتيب الجدول
-        let sortDirection = 1; // 1 للتصاعدي، -1 للتنازلي
+        // Function to sort table
+        let sortDirection = 1; // 1 for ascending, -1 for descending
         
         function sortTable(columnIndex) {
             const table = document.getElementById('chemicalTable');
@@ -427,7 +427,7 @@
                 const aValue = a.cells[columnIndex].textContent.trim();
                 const bValue = b.cells[columnIndex].textContent.trim();
                 
-                // محاولة تحويل القيم إلى أرقام إذا أمكن
+                // Try to convert values to numbers if possible
                 const aNum = parseFloat(aValue);
                 const bNum = parseFloat(bValue);
                 
@@ -438,15 +438,15 @@
                 }
             });
             
-            // إزالة الصفوف الحالية
+            // Remove current rows
             while (tbody.firstChild) {
                 tbody.removeChild(tbody.firstChild);
             }
             
-            // إضافة الصفوف المرتبة
+            // Add sorted rows
             rows.forEach(row => tbody.appendChild(row));
             
-            // عكس اتجاه الترتيب للمرة القادمة
+            // Reverse sort direction for next time
             sortDirection *= -1;
         }
     </script>
